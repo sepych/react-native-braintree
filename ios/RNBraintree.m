@@ -2,8 +2,7 @@
 #import "RNBraintree.h"
 #import "BraintreeCore.h"
 #import "BraintreeDropIn.h"
-#import "RCTRootView.h"
-
+#import <React/RCTBridge.h>
 
 @implementation RNBraintree
 
@@ -45,7 +44,7 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
     UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:token request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
-    [viewController dismissViewControllerAnimated:YES completion:nil];
+        [viewController dismissViewControllerAnimated:YES completion:nil];
         //NSLog(@"RNBraintree.. @",result.paymentMethod.nonce);
         
         if (error != nil) {
@@ -63,7 +62,7 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
             // result.paymentDescription
         }
     }];
-
+    
     [viewController presentViewController:dropIn animated:YES completion:^{}];
 }
 
