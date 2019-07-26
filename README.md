@@ -24,18 +24,6 @@
 
 #### Android
 
-1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.reactlibrary.RNBraintreePackage;` to the imports at the top of the file
-  - Add `new RNBraintreePackage()` to the list returned by the `getPackages()` method
-2. Append the following lines to `android/settings.gradle`:
-  	```
-  	include ':react-native-braintree'
-  	project(':react-native-braintree').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-braintree/android')
-  	```
-3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
-  	```
-      compile project(':react-native-braintree')
-  	```
 
 ## Usage
 ```javascript
