@@ -6,17 +6,15 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   RNBraintree
                    DESC
-  s.homepage     = "https://www.example.com"
+  s.homepage     = "https://home.page"
   s.license      = "MIT"
-  # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
-  s.author             = { "author" => "author@domain.cn" }
-  s.platform     = :ios, "8.0"
-  
-  s.source_files  = "RNBraintree/**/*.{h,m}"
+  s.author       = { "author" => "author@domain.cn" }
+  s.platform     = :ios, '9.0'
+  s.ios.deployment_target  = '9.0'
+  s.source       = { :git => "https://github.com/author/RNBraintree.git", :tag => "master" }
+  s.source_files = '**/*.{h,m}'
   s.requires_arc = true
 
-
   s.dependency "React"
-  #s.dependency "BraintreeDropIn"
 
 end
