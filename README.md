@@ -23,7 +23,14 @@
 4. Run your project (`Cmd+R`)<
 
 #### Android
-
+1. Append the following lines to `android/settings.gradle`:
+  	```
+  	include ':react-native-braintree'
+  	project(':react-native-braintree').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-braintree/android')
+  	```
+2. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
+  	```
+          implementation(project(':react-native-braintree'))
 
 ## Usage
 ```javascript
