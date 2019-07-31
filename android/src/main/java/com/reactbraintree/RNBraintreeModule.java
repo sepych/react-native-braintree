@@ -38,7 +38,7 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
   private Callback successCallback;
   private Callback cancelCallback;
 
-  private Promise braintreePromise;
+  private Promise braintreePromise = null;
 
   private static final int REQUEST_CODE = 1;
   private static final String CANCELED = "CANCELED";
@@ -96,7 +96,7 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
   public void showDropIn(final Promise promise) {
     this.braintreePromise = promise;
 
-    if(this.getToken() == null) {
+    if (this.getToken() == null) {
       promise.reject(ERROR, "You must call init method first!");
     } else {
       //dropin doesn't support 3DS2 yet
@@ -106,33 +106,9 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
       //.amount("1.00")
       //.requestThreeDSecureVerification(true)
 
-      try {
-        this.mBraintreeFragment = BraintreeFragment.newInstance(
-                (AppCompatActivity) getCurrentActivity(), this.getToken());
-        this.mBraintreeFragment.addListener(new BraintreeCancelListener() {
-          @Override
-          public void onCancel(int requestCode) {
-            braintreePromise.reject(CANCELED, "Drop In was canceled.");
-          }
-        });
-        this.mBraintreeFragment.addListener(new BraintreeErrorListener() {
-          @Override
-          public void onError(Exception error) {
-            braintreePromise.reject(ERROR, error.getMessage());
-          }
-        });
-        this.mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
-          @Override
-          public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-            braintreePromise.resolve(paymentMethodNonce.getNonce());
-          }
-        });
-
-
-        getCurrentActivity().startActivityForResult(dropInRequest.getIntent(getCurrentActivity()), REQUEST_CODE);
-      } catch (InvalidArgumentException e) {
-        e.printStackTrace();
-      }
+      getCurrentActivity()
+        .startActivityForResult(
+          dropInRequest.getIntent(getCurrentActivity()), REQUEST_CODE);
     }
   }
 
@@ -143,6 +119,38 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
         if (resultCode == Activity.RESULT_OK) {
           DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
 
+
+          try {
+            mBraintreeFragment = BraintreeFragment.newInstance(
+                    (AppCompatActivity) activity, getToken());
+            mBraintreeFragment.addListener(new BraintreeCancelListener() {
+              @Override
+              public void onCancel(int requestCode) {
+                if (braintreePromise != null) {
+                  braintreePromise.reject(CANCELED, "Drop In was canceled.");
+                }
+              }
+            });
+            mBraintreeFragment.addListener(new BraintreeErrorListener() {
+              @Override
+              public void onError(Exception error) {
+                if (braintreePromise != null) {
+                  braintreePromise.reject(ERROR, error.getMessage());
+                }
+
+              }
+            });
+            mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
+              @Override
+              public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                if (braintreePromise != null) {
+                  braintreePromise.resolve(paymentMethodNonce.getNonce());
+                }
+              }
+            });
+          } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+          }
 
           // Card nonce that we wish to upgrade to a 3DS nonce.
           CardNonce cardNonce = (CardNonce) result.getPaymentMethodNonce();
