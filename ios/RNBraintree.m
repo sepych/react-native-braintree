@@ -4,7 +4,13 @@
 #import "BraintreeDropIn.h"
 #import <React/RCTBridge.h>
 
-@implementation RNBraintree () <BTViewControllerPresentingDelegate, BTThreeDSecureRequestDelegate>
+
+
+
+
+@implementation RNBraintree
+
+
 
 static NSString* token;
 
@@ -57,7 +63,8 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
         } else {
             //resolve(result.paymentMethod.nonce);
 
-            self.paymentFlowDriver = [[BTPaymentFlowDriver alloc] initWithAPIClient:token];
+            BTAPIClient *apiClient = [[BTAPIClient alloc] initWithAuthorization:token];
+            self.paymentFlowDriver = [[BTPaymentFlowDriver alloc] initWithAPIClient:apiClient];
             self.paymentFlowDriver.viewControllerPresentingDelegate = self;
 
             BTThreeDSecureRequest *request = [[BTThreeDSecureRequest alloc] init];
@@ -119,18 +126,18 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
 
 
 - (void)paymentDriver:(id)driver requestsPresentationOfViewController:(UIViewController *)viewController {
-    [self presentViewController:viewController animated:YES completion:nil];
+    [viewController presentViewController:viewController animated:YES completion:nil];
 }
 
 - (void)paymentDriver:(id)driver requestsDismissalOfViewController:(UIViewController *)viewController {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [viewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 
-- (void)onLookupComplete:(nonnull BTThreeDSecureRequest *)request
-                  result:(nonnull BTThreeDSecureLookup *)result
-                    next:(nonnull void (^)(void))next {
-    [next];                  
+- (void)onLookupComplete:(BTThreeDSecureRequest *)request
+                  result:(BTThreeDSecureLookup *)result
+                    next:(void (^)(void))next {
+    next;
 }
 
 @end

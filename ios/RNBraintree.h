@@ -7,6 +7,10 @@
 
 #import "RCTRootView.h"
 
-@interface RNBraintree : NSObject <RCTBridgeModule>
+#import "BraintreePaymentFlow.h"
+
+@interface RNBraintree : NSObject <RCTBridgeModule, BTViewControllerPresentingDelegate, BTThreeDSecureRequestDelegate>
+
+@property (nonatomic, strong, readwrite) BTPaymentFlowDriver *paymentFlowDriver;
 
 @end
