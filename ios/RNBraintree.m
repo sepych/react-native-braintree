@@ -46,9 +46,32 @@ RCT_EXPORT_METHOD(init: (NSString *) ttoken)
 
 RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
+    BTThreeDSecureRequest *secureRequest = [[BTThreeDSecureRequest alloc] init];
+    secureRequest.amount = [NSDecimalNumber decimalNumberWithString:@"1"];
+    // secureRequest.nonce = result.paymentMethod.nonce;
+    secureRequest.email = @"test@email.com";
+    secureRequest.versionRequested = BTThreeDSecureVersion2;
+
+    // Make sure that self conforms BTThreeDSecureRequestDelegate
+    // secureRequest.threeDSecureRequestDelegate = self;
+
+    BTThreeDSecurePostalAddress *address = [BTThreeDSecurePostalAddress new];
+    address.givenName = @"Jill";
+    address.surname = @"Doe";
+    address.phoneNumber = @"5551234567";
+    address.streetAddress = @"555 Smith St";
+    address.extendedAddress = @"#2";
+    address.locality = @"Chicago";
+    address.region = @"IL";
+    address.postalCode = @"12345";
+    address.countryCodeAlpha2 = @"US";
+    secureRequest.billingAddress = address;
+
     //RCTLogInfo(@"RNBraintree in showDropIn, token:  %@", clientTokenOrTokenizationKey);
     UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
+    request.threeDSecureRequest = secureRequest;
+
 
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:token request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
         [viewController dismissViewControllerAnimated:YES completion:nil];
@@ -61,54 +84,35 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
             NSLog(@"CANCELLED");
             reject(@"CANCELLED", @"Braintree Dropin canceled", nil);
         } else {
-            //resolve(result.paymentMethod.nonce);
+            resolve(result.paymentMethod.nonce);
 
-            BTAPIClient *apiClient = [[BTAPIClient alloc] initWithAuthorization:token];
-            self.paymentFlowDriver = [[BTPaymentFlowDriver alloc] initWithAPIClient:apiClient];
-            self.paymentFlowDriver.viewControllerPresentingDelegate = self;
-
-            BTThreeDSecureRequest *request = [[BTThreeDSecureRequest alloc] init];
-            request.amount = [NSDecimalNumber decimalNumberWithString:@"1"];
-            request.nonce = result.paymentMethod.nonce;
-            request.email = @"test@email.com";
-            request.versionRequested = BTThreeDSecureVersion2;
-
-            // Make sure that self conforms BTThreeDSecureRequestDelegate
-            request.threeDSecureRequestDelegate = self;
-
-            BTThreeDSecurePostalAddress *address = [BTThreeDSecurePostalAddress new];
-            address.givenName = @"Jill";
-            address.surname = @"Doe";
-            address.phoneNumber = @"5551234567";
-            address.streetAddress = @"555 Smith St";
-            address.extendedAddress = @"#2";
-            address.locality = @"Chicago";
-            address.region = @"IL";
-            address.postalCode = @"12345";
-            address.countryCodeAlpha2 = @"US";
-            request.billingAddress = address;
+            // BTAPIClient *apiClient = [[BTAPIClient alloc] initWithAuthorization:token];
+            // self.paymentFlowDriver = [[BTPaymentFlowDriver alloc] initWithAPIClient:apiClient];
+            // self.paymentFlowDriver.viewControllerPresentingDelegate = self;
 
 
-            [self.paymentFlowDriver startPaymentFlow:request completion:^(BTPaymentFlowResult * _Nonnull result, NSError * _Nonnull error) {
-                if (error) {
-                    // Handle error
-                } else if (result) {
-                    BTThreeDSecureResult *threeDSecureResult = (BTThreeDSecureResult *)result;
 
-                    if (threeDSecureResult.tokenizedCard.threeDSecureInfo.liabilityShiftPossible) {
-                        if (threeDSecureResult.tokenizedCard.threeDSecureInfo.liabilityShifted) {
-                            // 3D Secure authentication success
-                        } else {
-                            // 3D Secure authentication failed
-                        }
-                    } else {
-                        // 3D Secure authentication was not possible
-                    }
 
-                    resolve(threeDSecureResult.tokenizedCard.nonce);
-                    // Use the `threeDSecureResult.tokenizedCard.nonce`
-                }
-            }];
+            // [self.paymentFlowDriver startPaymentFlow:request completion:^(BTPaymentFlowResult * _Nonnull result, NSError * _Nonnull error) {
+            //     if (error) {
+            //         // Handle error
+            //     } else if (result) {
+            //         BTThreeDSecureResult *threeDSecureResult = (BTThreeDSecureResult *)result;
+            //
+            //         if (threeDSecureResult.tokenizedCard.threeDSecureInfo.liabilityShiftPossible) {
+            //             if (threeDSecureResult.tokenizedCard.threeDSecureInfo.liabilityShifted) {
+            //                 // 3D Secure authentication success
+            //             } else {
+            //                 // 3D Secure authentication failed
+            //             }
+            //         } else {
+            //             // 3D Secure authentication was not possible
+            //         }
+            //
+            //         resolve(threeDSecureResult.tokenizedCard.nonce);
+            //         // Use the `threeDSecureResult.tokenizedCard.nonce`
+            //     }
+            // }];
 
 
 
