@@ -76,6 +76,8 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
     request.threeDSecureVerification = YES;
     request.threeDSecureRequest = secureRequest;
 
+    NSLog(@"DROP IN");
+
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:token request:request handler:^(BTDropInController * _Nonnull dropInController, BTDropInResult * _Nullable result, NSError * _Nullable error) {
         if (error) {
             NSLog(@"ERROR");
