@@ -13,6 +13,15 @@
 
 
 static NSString* token;
+static NSString* givenName;
+static NSString* surname;
+static NSString* phoneNumber;
+static NSString* streetAddress;
+static NSString* extendedAddress;
+static NSString* locality;
+static NSString* region;
+static NSString* postalCode;
+static NSString* countryCodeAlpha2;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -44,29 +53,41 @@ RCT_EXPORT_METHOD(init: (NSString *) ttoken)
     token = ttoken;
 }
 
+RCT_EXPORT_METHOD(setBillingAddress: (NSDictionary *)data)
+{
+    givenName = [data objectForKey:@"firstName"] ? data[@"firstName"] : NULL;
+    surname = [data objectForKey:@"lastName"] ? data[@"lastName"] : NULL;
+    phoneNumber = [data objectForKey:@"phoneNumber"] ? data[@"phoneNumber"] : NULL;
+    streetAddress = [data objectForKey:@"streetAddress"] ? data[@"streetAddress"] : NULL;
+    extendedAddress = [data objectForKey:@"extendedAddress"] ? data[@"extendedAddress"] : NULL;
+    locality = [data objectForKey:@"locality"] ? data[@"locality"] : NULL;
+    region = [data objectForKey:@"region"] ? data[@"region"] : NULL;
+    postalCode = [data objectForKey:@"postalCode"] ? data[@"postalCode"] : NULL;
+    countryCodeAlpha2 = [data objectForKey:@"countryCodeAlpha2"] ? data[@"countryCodeAlpha2"] : NULL;
+}
+
 RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
 
     BTThreeDSecureRequest *secureRequest = [[BTThreeDSecureRequest alloc] init];
     secureRequest.amount = [NSDecimalNumber decimalNumberWithString:@"1"];
-//    secureRequest.nonce = result.paymentMethod.nonce;
-    secureRequest.email = @"evgeni.gordejev@gmail.com";
+    // secureRequest.email = @"";
     secureRequest.versionRequested = BTThreeDSecureVersion2;
 
     // Make sure that self conforms BTThreeDSecureRequestDelegate
     secureRequest.threeDSecureRequestDelegate = self;
 
     BTThreeDSecurePostalAddress *address = [BTThreeDSecurePostalAddress new];
-    address.givenName = @"Jill";
-    address.surname = @"Doe";
-    address.phoneNumber = @"5551234567";
-    address.streetAddress = @"555 Smith St";
-    address.extendedAddress = @"#2";
-    address.locality = @"Chicago";
-    address.region = @"IL";
-    address.postalCode = @"12345";
-    address.countryCodeAlpha2 = @"US";
+    address.givenName = givenName;
+    address.surname = surname;
+    address.phoneNumber = phoneNumber;
+    address.streetAddress = streetAddress;
+    address.extendedAddress = extendedAddress;
+    address.locality = locality;
+    address.region = region;
+    address.postalCode = postalCode;
+    address.countryCodeAlpha2 = countryCodeAlpha2;
     secureRequest.billingAddress = address;
 
     //RCTLogInfo(@"RNBraintree in showDropIn, token:  %@", clientTokenOrTokenizationKey);
@@ -75,8 +96,6 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
     request.amount = @"1.00";
     request.threeDSecureVerification = YES;
     request.threeDSecureRequest = secureRequest;
-
-    NSLog(@"DROP IN");
 
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:token request:request handler:^(BTDropInController * _Nonnull dropInController, BTDropInResult * _Nullable result, NSError * _Nullable error) {
         if (error) {
@@ -91,61 +110,6 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
         }
         [dropInController dismissViewControllerAnimated:YES completion:nil];
     }];
-
-//    BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:token request:request handler:^(BTDropInController * _Nonnull controller, BTDropInResult * _Nullable result, NSError * _Nullable error) {
-//        [viewController dismissViewControllerAnimated:YES completion:nil];
-//        //NSLog(@"RNBraintree.. @",result.paymentMethod.nonce);
-//
-//        if (error != nil) {
-//            NSLog(@"ERROR");
-//            reject(@"ERROR", @"Braintree Dropin error", error);
-//        } else if (result.cancelled) {
-//            NSLog(@"CANCELLED");
-//            reject(@"CANCELLED", @"Braintree Dropin canceled", nil);
-//        } else {
-////            resolve(result.paymentMethod.nonce);
-//
-//
-//             BTAPIClient *apiClient = [[BTAPIClient alloc] initWithAuthorization:token];
-//             self.paymentFlowDriver = [[BTPaymentFlowDriver alloc] initWithAPIClient:apiClient];
-//             self.paymentFlowDriver.viewControllerPresentingDelegate = self;
-//
-//
-//
-//
-//             [self.paymentFlowDriver startPaymentFlow:secureRequest completion:^(BTPaymentFlowResult * _Nonnull result, NSError * _Nonnull error) {
-//                 if (error) {
-//                     // Handle error
-//                     NSLog(@"ERROR");
-//                     reject(@"ERROR", @"Braintree Dropin error", error);
-//                 } else if (result) {
-//                     BTThreeDSecureResult *threeDSecureResult = (BTThreeDSecureResult *)result;
-//
-//                     if (threeDSecureResult.tokenizedCard.threeDSecureInfo.liabilityShiftPossible) {
-//                         if (threeDSecureResult.tokenizedCard.threeDSecureInfo.liabilityShifted) {
-//                             // 3D Secure authentication success
-//                         } else {
-//                             // 3D Secure authentication failed
-//                         }
-//                     } else {
-//                         // 3D Secure authentication was not possible
-//                     }
-//
-//                     resolve(threeDSecureResult.tokenizedCard.nonce);
-//                     // Use the `threeDSecureResult.tokenizedCard.nonce`
-//                 }
-//             }];
-//
-//
-//
-//
-//            // Use the BTDropInResult properties to update your UI
-//            // result.paymentOptionType
-//            // result.paymentMethod
-//            // result.paymentIcon
-//            // result.paymentDescription
-//        }
-//    }];
 
     [viewController presentViewController:dropIn animated:YES completion:^{}];
 }
