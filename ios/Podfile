@@ -6,4 +6,7 @@ pod 'React'
 
 #waiting for official release with 3DS2
 #pod 'BraintreeDropIn', :git => 'https://github.com/braintree/braintree-ios-drop-in.git', :commit => '5266423d0e6e9f3b657380a8e3bf2cf01d051b7d'
-pod 'BraintreeDropIn'
+#pod 'BraintreeDropIn'
+
+pod 'BraintreeDropIn', :git => 'https://github.com/sepych/braintree-ios-drop-in.git', :commit => '40832dfc24283299b4258c86dc844c335ee96749'
+
