@@ -17,4 +17,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React"
   s.dependency "BraintreeDropIn"
+  s.dependency "CardIO"
+
 end
