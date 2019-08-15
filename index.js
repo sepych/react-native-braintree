@@ -1,6 +1,4 @@
 
-import { NativeModules } from 'react-native';
 
-const { RNBraintree } = NativeModules;
+export { BraintreeSingleton as Braintree } from './src/Braintree';
 
-export default RNBraintree;
