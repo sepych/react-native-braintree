@@ -119,7 +119,9 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
         if (resultCode == Activity.RESULT_OK) {
           DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
 
-
+          //disable 3DS2
+          braintreePromise.resolve(result.getPaymentMethodNonce().getNonce());
+          /*
           try {
             mBraintreeFragment = BraintreeFragment.newInstance(
                     (AppCompatActivity) activity, getToken());
@@ -152,6 +154,11 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
           }
 
+          ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+              .nonce(nonce)
+              .amount("5.00");
+          ThreeDSecure.performVerification(mBraintreeFragment, threeDSecureRequest);
+
           // Card nonce that we wish to upgrade to a 3DS nonce.
           CardNonce cardNonce = (CardNonce) result.getPaymentMethodNonce();
 
@@ -182,6 +189,7 @@ public class RNBraintreeModule extends ReactContextBaseJavaModule {
           });
 
           // use the result to update your UI and send the payment method nonce to your server
+          */
         } else if (resultCode == Activity.RESULT_CANCELED) {
           // the user canceled
           braintreePromise.reject(CANCELED, "Drop In was canceled. 1");

@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(setBillingAddress: (NSDictionary *)data)
 RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
-
+    /*
     BTThreeDSecureRequest *secureRequest = [[BTThreeDSecureRequest alloc] init];
     secureRequest.amount = [NSDecimalNumber decimalNumberWithString:@"1"];
     // secureRequest.email = @"";
@@ -91,11 +91,11 @@ RCT_REMAP_METHOD(showDropIn, resolver:(RCTPromiseResolveBlock)resolve rejecter:(
     secureRequest.billingAddress = address;
 
     //RCTLogInfo(@"RNBraintree in showDropIn, token:  %@", clientTokenOrTokenizationKey);
-
+    */
     BTDropInRequest *request = [[BTDropInRequest alloc] init];
     request.amount = @"1.00";
-    request.threeDSecureVerification = YES;
-    request.threeDSecureRequest = secureRequest;
+    //request.threeDSecureVerification = YES;
+    //request.threeDSecureRequest = secureRequest;
 
     BTDropInController *dropIn = [[BTDropInController alloc] initWithAuthorization:token request:request handler:^(BTDropInController * _Nonnull dropInController, BTDropInResult * _Nullable result, NSError * _Nullable error) {
         if (error) {
